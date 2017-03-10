@@ -1878,6 +1878,12 @@ export declare function customElement(name: string): any;
 export declare function customAttribute(name: string, defaultBindingMode?: number): any;
 
 /**
+* Decorator: Indicates that the decorated class is a custom attribute.
+* @param name The name of the alias which will mirror any existing behavior.
+*/
+export declare function alias(name: string): any;
+
+/**
 * Decorator: Applied to custom attributes. Indicates that whatever element the
 * attribute is placed on should be converted into a template and that this
 * attribute controls the instantiation of the template.

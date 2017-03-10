@@ -44,6 +44,7 @@ export class HtmlBehaviorResource {
     this.containerless = false;
     this.properties = [];
     this.attributes = {};
+    this.aliases = [];
     this.isInitialized = false;
     this.primaryProperty = null;
   }

@@ -3652,6 +3652,14 @@ export class ResourceModule {
     for (let i = 0, ii = resources.length; i < ii; ++i) {
       resources[i].register(registry, name);
       name = null;
+      if (resources[i].metadata.aliases && resources[i].metadata.aliases.length > 0) {
+        resources[i].metadata.aliases.forEach(alias => {
+          registry.registerAttribute(alias, resources[i].metadata, alias);
+          let r = registry.getAttribute(alias);
+          r.attributeName = alias;
+          r.attributes[alias] = resources[i].metadata.attributes[resources[i].metadata.attributeName];
+        });
+      }
     }
   }
 
@@ -4726,6 +4734,7 @@ export class HtmlBehaviorResource {
     this.containerless = false;
     this.properties = [];
     this.attributes = {};
+    this.aliases = [];
     this.isInitialized = false;
     this.primaryProperty = null;
   }
@@ -5706,6 +5715,20 @@ export function customAttribute(name: string, defaultBindingMode?: number): any 
     let r = metadata.getOrCreateOwn(metadata.resource, HtmlBehaviorResource, target);
     r.attributeName = validateBehaviorName(name, 'custom attribute');
     r.attributeDefaultBindingMode = defaultBindingMode;
+  };
+}
+
+/**
+* Decorator: Indicates that the decorated class is a custom attribute.
+* @param name The name of the alias which will mirror any existing behavior.
+*/
+export function alias(name: string): any {
+  return function(target) {
+    let existing = metadata.get(metadata.resource, target);
+    if (!existing) {
+      throw Error('No behavior to alias');
+    }
+    existing.aliases.push(name);
   };
 }
 

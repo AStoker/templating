@@ -66,6 +66,20 @@ export function customAttribute(name: string, defaultBindingMode?: number): any 
 }
 
 /**
+* Decorator: Indicates that the decorated class is a custom attribute.
+* @param name The name of the alias which will mirror any existing behavior.
+*/
+export function alias(name: string): any {
+  return function(target) {
+    let existing = metadata.get(metadata.resource, target);
+    if (!existing) {
+      throw Error('No behavior to alias');
+    }
+    existing.aliases.push(name);
+  };
+}
+
+/**
 * Decorator: Applied to custom attributes. Indicates that whatever element the
 * attribute is placed on should be converted into a template and that this
 * attribute controls the instantiation of the template.

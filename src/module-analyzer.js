@@ -72,6 +72,14 @@ export class ResourceModule {
     for (let i = 0, ii = resources.length; i < ii; ++i) {
       resources[i].register(registry, name);
       name = null;
+      if (resources[i].metadata.aliases && resources[i].metadata.aliases.length > 0) {
+        resources[i].metadata.aliases.forEach(alias => {
+          registry.registerAttribute(alias, resources[i].metadata, alias);
+          let r = registry.getAttribute(alias);
+          r.attributeName = alias;
+          r.attributes[alias] = resources[i].metadata.attributes[resources[i].metadata.attributeName];
+        });
+      }
     }
   }
 

@@ -2879,9 +2879,21 @@ export var ResourceModule = function () {
       name = null;
     }
 
-    for (var i = 0, ii = resources.length; i < ii; ++i) {
+    var _loop = function _loop(i, ii) {
       resources[i].register(registry, name);
       name = null;
+      if (resources[i].metadata.aliases && resources[i].metadata.aliases.length > 0) {
+        resources[i].metadata.aliases.forEach(function (alias) {
+          registry.registerAttribute(alias, resources[i].metadata, alias);
+          var r = registry.getAttribute(alias);
+          r.attributeName = alias;
+          r.attributes[alias] = resources[i].metadata.attributes[resources[i].metadata.attributeName];
+        });
+      }
+    };
+
+    for (var i = 0, ii = resources.length; i < ii; ++i) {
+      _loop(i, ii);
     }
   };
 
@@ -3777,6 +3789,7 @@ export var HtmlBehaviorResource = function () {
     this.containerless = false;
     this.properties = [];
     this.attributes = {};
+    this.aliases = [];
     this.isInitialized = false;
     this.primaryProperty = null;
   }
@@ -4601,6 +4614,16 @@ export function customAttribute(name, defaultBindingMode) {
     var r = metadata.getOrCreateOwn(metadata.resource, HtmlBehaviorResource, target);
     r.attributeName = validateBehaviorName(name, 'custom attribute');
     r.attributeDefaultBindingMode = defaultBindingMode;
+  };
+}
+
+export function alias(name) {
+  return function (target) {
+    var existing = metadata.get(metadata.resource, target);
+    if (!existing) {
+      throw Error('No behavior to alias');
+    }
+    existing.aliases.push(name);
   };
 }
 
